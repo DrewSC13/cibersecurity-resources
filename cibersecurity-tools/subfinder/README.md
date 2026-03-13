@@ -2,24 +2,25 @@
 
 ## Descripción
 
-**Subfinder** es una herramienta de reconocimiento pasivo desarrollada por **ProjectDiscovery** que permite descubrir subdominios de un dominio objetivo utilizando múltiples fuentes OSINT.
+**Subfinder** es una herramienta de **enumeración pasiva de subdominios** desarrollada por **ProjectDiscovery** que permite descubrir subdominios asociados a un dominio objetivo utilizando múltiples fuentes OSINT.
 
-La herramienta consulta diferentes servicios públicos, APIs y bases de datos para encontrar subdominios asociados a un dominio sin interactuar directamente con el objetivo.
+La herramienta recopila información desde servicios públicos, APIs y bases de datos de Internet para identificar subdominios relacionados con una organización sin interactuar directamente con la infraestructura objetivo.
 
-Esto la convierte en una herramienta ideal para la fase de **reconocimiento en pentesting, bug bounty y análisis de superficie de ataque**.
+Subfinder es ampliamente utilizada en **pentesting, bug bounty y auditorías de seguridad** para ampliar la superficie de ataque durante la fase de reconocimiento.
 
-Subfinder es conocida por ser:
+Características principales:
 
-- rápida
-- modular
-- extensible
-- altamente automatizable
+* enumeración pasiva de subdominios
+* integración con múltiples fuentes OSINT
+* alta velocidad de procesamiento
+* soporte para APIs externas
+* integración con pipelines de reconocimiento
 
 ---
 
 ## Tipo de herramienta
 
-Reconocimiento / OSINT / Subdomain Enumeration
+Reconnaissance / OSINT / Subdomain Enumeration
 
 ---
 
@@ -43,15 +44,23 @@ https://github.com/projectdiscovery/subfinder
 go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
 ```
 
-
 La herramienta se instalará en:
 
+```text
 ~/go/bin/subfinder
+```
 
 Agregar al PATH si es necesario:
 
+```bash
 export PATH=$PATH:~/go/bin
-Instalación manual
+```
+
+---
+
+## Instalación manual
+
+```bash
 git clone https://github.com/projectdiscovery/subfinder.git
 
 cd subfinder/v2/cmd/subfinder
@@ -59,192 +68,265 @@ cd subfinder/v2/cmd/subfinder
 go build
 
 ./subfinder -h
-Instalación con Docker
+```
+
+---
+
+## Instalación con Docker
+
+```bash
 docker pull projectdiscovery/subfinder
+```
 
 Ejemplo de ejecución:
 
+```bash
 docker run projectdiscovery/subfinder -d example.com
-Uso básico
+```
+
+---
+
+# Uso básico
 
 Enumerar subdominios de un dominio:
 
+```bash
 subfinder -d example.com
+```
 
 Salida típica:
 
+```
 api.example.com
-dev.example.com
 mail.example.com
+dev.example.com
 test.example.com
-Opciones principales
-Enumerar un dominio
+```
+
+---
+
+# Opciones principales
+
+### Enumerar un dominio
+
+```bash
 subfinder -d example.com
-Guardar resultados en archivo
+```
+
+---
+
+### Guardar resultados en archivo
+
+```bash
 subfinder -d example.com -o subdomains.txt
-Leer dominios desde archivo
+```
+
+---
+
+### Leer dominios desde archivo
+
+```bash
 subfinder -dL domains.txt
-Modo silencioso (solo resultados)
+```
+
+---
+
+### Modo silencioso
+
+```bash
 subfinder -d example.com -silent
-Usar múltiples threads
-subfinder -d example.com -t 50
-Resolver subdominios encontrados
+```
+
+---
+
+### Resolver subdominios encontrados
+
+```bash
 subfinder -d example.com -resolve
-Uso en pipelines de reconocimiento
+```
 
-Subfinder suele combinarse con otras herramientas del ecosistema ProjectDiscovery.
+---
 
-Ejemplo:
+### Aumentar número de threads
 
-subfinder -d example.com -silent | httpx
+```bash
+subfinder -d example.com -t 50
+```
 
-Pipeline típico de bug bounty:
+---
 
-subfinder -d example.com -silent \
-| httpx -silent \
-| nuclei
-Fuentes OSINT utilizadas
+# Fuentes OSINT utilizadas
 
-Subfinder consulta múltiples servicios públicos, entre ellos:
+Subfinder consulta múltiples servicios públicos para descubrir subdominios, entre ellos:
 
-AlienVault
+* AlienVault
+* Censys
+* CertSpotter
+* Chaos
+* CommonCrawl
+* CRT.sh
+* GitHub
+* HackerTarget
+* LeakIX
+* Netlas
+* SecurityTrails
+* Shodan
+* VirusTotal
+* Wayback Archive
+* WhoisXML
+* ZoomEye
 
-Censys
+Algunas fuentes requieren **API keys** para obtener mejores resultados.
 
-CertSpotter
+---
 
-Chaos
+# Configuración de APIs
 
-CommonCrawl
+Las APIs se configuran en:
 
-CRT.sh
-
-GitHub
-
-HackerTarget
-
-LeakIX
-
-Netlas
-
-SecurityTrails
-
-Shodan
-
-VirusTotal
-
-WaybackArchive
-
-WhoisXML
-
-ZoomEye
-
-Algunas fuentes requieren API keys para aumentar los resultados.
-
-Configuración de APIs
-
-Subfinder permite usar APIs externas mediante un archivo de configuración.
-
-Ubicación del archivo:
-
+```
 ~/.config/subfinder/provider-config.yaml
+```
 
 Ejemplo:
 
+```yaml
 shodan:
-  - SHODAN_API_KEY
+  - API_KEY
 
 virustotal:
-  - VIRUSTOTAL_API_KEY
+  - API_KEY
 
 securitytrails:
-  - SECURITYTRAILS_API_KEY
+  - API_KEY
+```
 
-Esto mejora significativamente la enumeración.
+Esto aumenta significativamente la cantidad de subdominios encontrados.
 
-Casos de uso
+---
 
-Subfinder es utilizado en:
+# Uso en pipelines de reconocimiento
 
-pentesting
+Subfinder se integra fácilmente con otras herramientas.
 
-bug bounty
+### Enumeración de subdominios y verificación de servicios web
 
-red team
+```bash
+subfinder -d example.com -silent | httpx
+```
 
-OSINT
+---
 
-mapeo de superficie de ataque
+### Pipeline completo de reconocimiento
 
-auditorías de seguridad
+```bash
+subfinder -d example.com -silent \
+| naabu \
+| httpx \
+| nuclei
+```
 
-Ventajas
+Este pipeline permite:
 
-Enumeración pasiva (no interactúa con el objetivo)
+1. descubrir subdominios
+2. identificar puertos abiertos
+3. detectar servicios web activos
+4. escanear vulnerabilidades
 
-Muy rápido
+---
 
-Soporte para múltiples fuentes OSINT
+# Casos de uso
 
-Integración con herramientas ProjectDiscovery
+Subfinder se utiliza en:
 
-Fácil automatización en pipelines
+* pentesting
+* bug bounty
+* red teaming
+* OSINT
+* auditorías de seguridad
+* descubrimiento de infraestructura
 
-Limitaciones
+---
 
-depende de fuentes OSINT externas
+# Ventajas
 
-algunas fuentes requieren API
+* enumeración pasiva
+* extremadamente rápido
+* integración con herramientas modernas
+* fácil automatización en pipelines
 
-no realiza brute-force de subdominios
+---
 
-Para brute-force se recomienda usar herramientas como:
+# Limitaciones
 
-dnsx
+* depende de fuentes OSINT externas
+* algunas fuentes requieren API
+* no realiza brute-force de subdominios
 
-amass
+Para ampliar la enumeración se recomienda utilizar:
 
-shuffledns
+* assetfinder
+* amass
+* dnsx
 
-Ejemplo práctico
+---
 
-Enumerar subdominios y guardar resultados:
+# Ejemplo práctico
 
-subfinder -d target.com -o subs.txt
+Enumerar subdominios:
 
-Filtrar dominios activos:
+```bash
+subfinder -d target.com -silent
+```
 
-cat subs.txt | httpx -silent
+Verificar servicios web:
+
+```bash
+subfinder -d target.com -silent | httpx
+```
 
 Escanear vulnerabilidades:
 
-cat subs.txt | httpx | nuclei
-Herramientas relacionadas
+```bash
+subfinder -d target.com -silent \
+| httpx \
+| nuclei
+```
+
+---
+
+# Herramientas relacionadas
 
 Dentro de este repositorio:
 
-assetfinder
+* assetfinder
+* naabu
+* nuclei
+* rustscan
+* theHarvester
 
-nuclei
+---
 
-rustscan
-
-theHarvester
-
-Advertencia
+# Advertencia
 
 Esta herramienta debe utilizarse únicamente en:
 
-laboratorios
+* laboratorios
+* entornos controlados
+* auditorías autorizadas
 
-entornos controlados
+El uso no autorizado contra sistemas externos puede ser ilegal.
 
-auditorías autorizadas
+---
 
-El uso sin autorización puede ser ilegal.
-
-Autor
+# Autor
 
 ProjectDiscovery
 
 https://projectdiscovery.io
+
+---
+
+# Licencia
+
+MIT License

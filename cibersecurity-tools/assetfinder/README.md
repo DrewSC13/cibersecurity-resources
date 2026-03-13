@@ -1,118 +1,260 @@
 # Assetfinder
 
-`assetfinder` es una herramienta OSINT escrita en Go que permite **encontrar dominios y subdominios relacionados** con un dominio objetivo, utilizando varias fuentes públicas de información.
+## Descripción
 
-Es ideal para la fase de **reconocimiento pasivo** en hacking ético, bug bounty, CTFs y auditorías de seguridad.
+**Assetfinder** es una herramienta de **reconocimiento pasivo** utilizada para descubrir subdominios asociados a un dominio objetivo utilizando múltiples fuentes OSINT.
 
----
+La herramienta consulta diferentes servicios públicos y bases de datos para identificar activos expuestos en Internet relacionados con una organización.
 
-## 🧩 ¿Qué hace Assetfinder?
+Assetfinder es especialmente útil durante la fase inicial de **reconocimiento en pentesting y bug bounty**, ya que permite identificar rápidamente subdominios que podrían expandir la superficie de ataque.
 
-Dado un dominio (por ejemplo: `example.com`), `assetfinder` busca:
+Características principales:
 
-- Dominios relacionados
-- Subdominios
-- Resultados en múltiples fuentes OSINT
-
-Fuentes utilizadas (según la versión clásica del proyecto):
-
-- CertSpotter  
-- crt.sh  
-- Hackertarget  
-- Threatcrowd  
-- Wayback Machine  
-- BufferOver  
-- Urlscan  
-- VirusTotal (requiere API key)  
-
-> Nota: algunas fuentes pueden tener límites de uso o requerir API key.
+* Enumeración pasiva de subdominios
+* Consulta múltiples fuentes OSINT
+* Muy rápido y ligero
+* Fácil integración en pipelines
+* Ideal para reconocimiento inicial
 
 ---
 
-## 📦 Instalación
+## Tipo de herramienta
 
-### 🔹 Requisitos
+Reconnaissance / OSINT / Subdomain Enumeration
 
-- Tener **Go** instalado (Go 1.18+ recomendado).
-- Tener el `GOPATH/bin` en tu `PATH` (opcional pero recomendado).
+---
 
-Puedes comprobar tu versión de Go con:
+## Lenguaje
 
-go version
+Go
 
-🔹 Instalación con go install (recomendada)
-go install github.com/tomnomnom/assetfinder@latest
+---
 
+## Repositorio oficial
 
-Esto descargará, compilará e instalará el binario en:
-
-$GOPATH/bin/assetfinder
-
-
-Si tienes Go configurado correctamente, deberías poder ejecutarlo con:
-
-assetfinder -h
-
-🔹 Compilar desde el código fuente (esta carpeta)
-
-Si tienes este repositorio clonado en:
-
-cibersecurity-tools/assetfinder/
-
-
-puedes compilar el binario desde aquí:
-
-cd assetfinder
-go build -o assetfinder main.go
-
-
-Esto generará un binario llamado assetfinder en la misma carpeta.
-Opcionalmente, puedes moverlo a tu PATH:
-
-sudo mv assetfinder /usr/local/bin/
-
-⚙️ Uso básico
-
-La sintaxis general es:
-
-assetfinder [--subs-only] <dominio>
-
-
-Parámetros:
-
-<dominio> → dominio objetivo (ej: example.com)
-
---subs-only → muestra solo subdominios, sin incluir el dominio raíz
-
-🔑 API Keys (VirusTotal y otros)
-
-Algunas fuentes como VirusTotal requieren API key para funcionar.
-
-Assetfinder buscará la API key de VirusTotal en la variable de entorno:
-
-export VIRUSTOTAL_API_KEY="tu_api_key_aqui"
-
-
-Puedes agregar esto a tu ~/.bashrc, ~/.zshrc o similar para que se cargue siempre.
-
-🧱 Estructura de esta carpeta
-
-Este directorio contiene:
-
-main.go → código principal del programa
-
-crtsh.go, certspotter.go, wayback.go, etc. → integraciones con distintas fuentes
-
-virustotal.go → integración con VirusTotal
-
-ratelimit.go → manejo de límites de peticiones
-
-script/ → scripts auxiliares (si los hay)
-
-LICENSE → licencia del proyecto original (MIT)
-
-📎 Créditos
-
-Proyecto original:
 https://github.com/tomnomnom/assetfinder
 
+---
+
+# Instalación
+
+## Instalación con Go
+
+```bash
+go install github.com/tomnomnom/assetfinder@latest
+```
+
+La herramienta se instalará en:
+
+```text
+~/go/bin/assetfinder
+```
+
+Agregar al PATH si es necesario:
+
+```bash
+export PATH=$PATH:~/go/bin
+```
+
+---
+
+## Instalación manual
+
+```bash
+git clone https://github.com/tomnomnom/assetfinder.git
+
+cd assetfinder
+
+go build
+
+./assetfinder -h
+```
+
+---
+
+# Uso básico
+
+Enumerar subdominios de un dominio:
+
+```bash
+assetfinder example.com
+```
+
+Salida típica:
+
+```
+api.example.com
+mail.example.com
+dev.example.com
+test.example.com
+```
+
+---
+
+# Opciones principales
+
+### Enumerar subdominios
+
+```bash
+assetfinder example.com
+```
+
+---
+
+### Mostrar solo subdominios relacionados
+
+```bash
+assetfinder --subs-only example.com
+```
+
+---
+
+### Guardar resultados en archivo
+
+```bash
+assetfinder example.com > subdomains.txt
+```
+
+---
+
+# Fuentes OSINT utilizadas
+
+Assetfinder consulta diferentes servicios públicos, entre ellos:
+
+* CertSpotter
+* CRT.sh
+* HackerTarget
+* ThreatCrowd
+* Wayback Machine
+* VirusTotal
+* URLScan
+* Facebook Certificate Transparency
+
+Estas fuentes permiten descubrir subdominios sin interactuar directamente con el objetivo.
+
+---
+
+# Uso en pipelines de reconocimiento
+
+Assetfinder suele combinarse con otras herramientas para ampliar la fase de reconocimiento.
+
+### Enumerar subdominios y verificar servicios web
+
+```bash
+assetfinder --subs-only example.com | httpx
+```
+
+---
+
+### Pipeline completo de reconocimiento
+
+```bash
+assetfinder --subs-only example.com \
+| naabu \
+| httpx \
+| nuclei
+```
+
+Este pipeline permite:
+
+1. descubrir subdominios
+2. identificar puertos abiertos
+3. detectar servicios web activos
+4. escanear vulnerabilidades
+
+---
+
+# Casos de uso
+
+Assetfinder se utiliza en:
+
+* pentesting
+* bug bounty
+* red teaming
+* OSINT
+* reconocimiento de infraestructura
+* mapeo de superficie de ataque
+
+---
+
+# Ventajas
+
+* extremadamente rápido
+* ligero y fácil de usar
+* integración sencilla en pipelines
+* no requiere configuración compleja
+
+---
+
+# Limitaciones
+
+* depende de fuentes OSINT externas
+* no realiza brute-force de subdominios
+* resultados limitados en comparación con herramientas más avanzadas
+
+Para ampliar la enumeración se recomienda usar herramientas como:
+
+* subfinder
+* amass
+* dnsx
+
+---
+
+# Ejemplo práctico
+
+Enumerar subdominios:
+
+```bash
+assetfinder --subs-only target.com
+```
+
+Filtrar hosts activos:
+
+```bash
+assetfinder --subs-only target.com | httpx
+```
+
+Escanear vulnerabilidades:
+
+```bash
+assetfinder --subs-only target.com \
+| httpx \
+| nuclei
+```
+
+---
+
+# Herramientas relacionadas
+
+Dentro de este repositorio:
+
+* subfinder
+* naabu
+* nuclei
+* theHarvester
+
+---
+
+# Advertencia
+
+Esta herramienta debe utilizarse únicamente en:
+
+* laboratorios
+* entornos controlados
+* auditorías autorizadas
+
+El uso no autorizado contra sistemas externos puede ser ilegal.
+
+---
+
+# Autor
+
+Tom Hudson (tomnomnom)
+
+https://github.com/tomnomnom
+
+---
+
+# Licencia
+
+MIT License
