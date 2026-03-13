@@ -1,3 +1,0 @@
-[submodule "cibersecurity-tools/rustscan/rustscan"]
-	path = cibersecurity-tools/rustscan/rustscan
-	url = https://github.com/RustScan/RustScan.git
